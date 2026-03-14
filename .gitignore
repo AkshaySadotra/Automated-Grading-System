@@ -1,0 +1,4 @@
+.venv
+GradingSystem/.env
+GradingSystem/AutomatedGradingFeedback/.env
+frontend/node_modules

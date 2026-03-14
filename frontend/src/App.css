@@ -1,0 +1,124 @@
+/* Main Layout Styles included in App.css or index.css, 
+   pending specific layout needs not covered by index.css */
+
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at top left, #1c1c2e 0%, var(--bg-primary) 50%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.App-header {
+  background: linear-gradient(135deg, #1e1e2d 0%, #151521 100%);
+  padding: 2rem;
+  border-bottom: 1px solid #2d2d3a;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title-section h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
+  background: linear-gradient(90deg, #00d4ff 0%, #a855f7 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.title-section p {
+  margin: 0;
+  color: #8b8b9e;
+  font-size: 1.1rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1rem;
+  background-color: #22222d;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #333342;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #b0b0c0;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #2d2d3a;
+  color: #fff;
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(0, 212, 255, 0.2) 100%);
+  color: #fff;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.main-content {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.centered-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+  padding: 2rem;
+}
+
+.centered-layout .input-section {
+  width: 100%;
+  max-width: 500px;
+}
+
+.input-section {
+  position: relative;
+}
+
+.output-section {
+  position: relative;
+  height: 100%;
+}
+
+.decoration-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  background: var(--accent-primary);
+  filter: blur(100px);
+  opacity: 0.1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+}
