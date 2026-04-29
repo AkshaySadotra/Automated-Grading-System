@@ -1,9 +1,10 @@
+# Flask Backend Server
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from AutomatedGradingFeedback.AutomatedGradingFeedback import Automated_Grading_Feedback
-
 load_dotenv()
+
+from AutomatedGradingFeedback.AutomatedGradingFeedback import Automated_Grading_Feedback
 
 app = Flask(__name__)
 CORS(app)
@@ -12,40 +13,57 @@ CORS(app)
 def home():
     return jsonify({"message": "Hello from Flask"})
 
+@app.route("/UploadFiles", methods=["POST"])
+def upload_files():
+    study_zip = request.files.get('StudyFiles')
+    assignment_zip = request.files.get('AssignmentFiles')
+
+    if not study_zip or not assignment_zip:
+        return jsonify({"error": "Both StudyFiles and AssignmentFiles ZIPs are required."}), 400
+
+    from AutomatedGradingFeedback.ZipHandler import process_uploaded_zip
+    try:
+        study_folder_id, err1 = process_uploaded_zip(study_zip, "StudyMaterial")
+        assignment_folder_id, err2 = process_uploaded_zip(assignment_zip, "Assignments", study_material_id=study_folder_id)
+        
+        if err1 or err2:
+            return jsonify({"error": f"{err1 or ''} {err2 or ''}"}), 500
+            
+        return jsonify({
+            "message": "Files uploaded and processed successfully!",
+            "studyFolderId": study_folder_id,
+            "assignmentFolderId": assignment_folder_id
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/AutomatedGradingFeedback", methods=["GET", "POST"])
 def grading_feedback():
     if request.method == "POST":
-        # Check if we received actual ZIP files
+        # Check if we received actual ZIP files (Backward compatibility)
         study_zip = request.files.get('StudyFiles')
         assignment_zip = request.files.get('AssignmentFiles')
         
-        # Check if we received just the string IDs (from History page)
+        # Check if we received folder IDs (from FormData or JSON body)
         study_id_str = request.form.get('StudyFiles')
         assignment_id_str = request.form.get('AssignmentFiles')
+        if not study_id_str and request.is_json:
+            study_id_str = request.json.get('StudyFiles')
+        if not assignment_id_str and request.is_json:
+            assignment_id_str = request.json.get('AssignmentFiles')
         
         if study_zip and assignment_zip:
             from AutomatedGradingFeedback.ZipHandler import process_uploaded_zip
             study_folder_id, err1 = process_uploaded_zip(study_zip, "StudyMaterial")
             assignment_folder_id, err2 = process_uploaded_zip(assignment_zip, "Assignments", study_material_id=study_folder_id)
-            
-            if err1 or err2:
-                return jsonify({"error": f"{err1 or ''} {err2 or ''}"}), 500
-                
+            if err1 or err2: return jsonify({"error": f"{err1 or ''} {err2 or ''}"}), 500
             return Automated_Grading_Feedback(study_folder_id, assignment_folder_id)
             
         elif study_id_str and assignment_id_str:
-            # We already have the IDs from the database
             return Automated_Grading_Feedback(study_id_str, assignment_id_str)
             
-        else:
-            return jsonify({"error": "Both StudyFiles and AssignmentFiles (either as ZIPs or folder IDs) are required."}), 400
+        return jsonify({"error": "Required files or IDs missing."}), 400
         
-        if err1 or err2:
-            return jsonify({"error": f"{err1 or ''} {err2 or ''}"}), 500
-
-        return Automated_Grading_Feedback(study_folder_id, assignment_folder_id)
-        
-    # Fallback to older GET logic if needed (or keeping original signature)
     StudyFiles, AssignmentFiles = request.args.get('StudyFiles'), request.args.get('AssignmentFiles')
     return Automated_Grading_Feedback(StudyFiles, AssignmentFiles)
 
@@ -178,4 +196,4 @@ def save_feedback():
             conn.close()
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, port=5000)

@@ -7,14 +7,18 @@ import './index.css';
 import './App.css';
 
 function App() {
-    const [feedback, setFeedback] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [studyFile, setStudyFile] = useState(null);
+    const [assignmentFile, setAssignmentFile] = useState(null);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
 
-    const handleRun = async (studyFile, assignmentFile) => {
+    const handleUpload = async () => {
+        if (!studyFile || !assignmentFile) return;
+
         setIsLoading(true);
         setError('');
-        setFeedback('');
+        setUploadSuccess(false);
 
         try {
             const formData = new FormData();
@@ -22,7 +26,7 @@ function App() {
             formData.append('AssignmentFiles', assignmentFile);
 
             const response = await fetch(
-                `http://localhost:5000/AutomatedGradingFeedback`,
+                `http://127.0.0.1:5000/UploadFiles`,
                 {
                     method: 'POST',
                     body: formData
@@ -30,28 +34,23 @@ function App() {
             );
 
             if (!response.ok) {
-                throw new Error(`Connection Failed: ${response.statusText}`);
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let resultText = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-
-                if (done) {
-                    break;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || `Error ${response.status}: ${response.statusText}`);
+                } else {
+                    throw new Error(`Server Error ${response.status}: ${response.statusText}. Please check backend logs.`);
                 }
-
-                const chunk = decoder.decode(value, { stream: true });
-                resultText += chunk;
-                setFeedback(resultText);
             }
+
+            // Success cleanup - wipe files after upload is complete
+            setStudyFile(null);
+            setAssignmentFile(null);
+            setUploadSuccess(true);
 
         } catch (err) {
             console.error(err);
-            setError(err.message || "Failed to connect to the analysis engine.");
+            setError(err.message || "Failed to connect to the server.");
         } finally {
             setIsLoading(false);
         }
@@ -64,16 +63,43 @@ function App() {
 
                 <main className="main-content">
                     <Routes>
-                        <Route 
-                            path="/" 
+                        <Route
+                            path="/"
                             element={
                                 <div className="centered-layout">
                                     <section className="input-section">
-                                        <UploadInput onRun={handleRun} isLoading={isLoading} />
+                                        <UploadInput
+                                            onRun={handleUpload}
+                                            isLoading={isLoading}
+                                            studyFile={studyFile}
+                                            setStudyFile={setStudyFile}
+                                            assignmentFile={assignmentFile}
+                                            setAssignmentFile={setAssignmentFile}
+                                        />
                                         <div className="decoration-orb"></div>
                                     </section>
+
+                                    {error && (
+                                        <div className="error-banner home-error">
+                                            {error}
+                                        </div>
+                                    )}
+
+                                    {uploadSuccess && (
+                                        <div className="success-overlay">
+                                            <div className="success-modal">
+                                                <div className="success-icon">✨</div>
+                                                <h3>Upload Successful!</h3>
+                                                <p>We are ready to analyze the files. Head over to AI Insights to start the process.</p>
+                                                <div className="modal-actions">
+                                                    <button onClick={() => setUploadSuccess(false)} className="secondary-btn">Close</button>
+                                                    <a href="/history" className="primary-btn">Go to AI Insights</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            } 
+                            }
                         />
                         <Route path="/history" element={<HistoryPage />} />
                     </Routes>

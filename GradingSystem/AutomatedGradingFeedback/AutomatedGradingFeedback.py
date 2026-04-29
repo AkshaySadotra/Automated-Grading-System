@@ -42,7 +42,7 @@ def Automated_Grading_Feedback(StudyFiles, AssignmentFiles):
                     else:
                         output = str(message.content)
 
-                    output = output.encode('windows-1252', errors='ignore').decode('utf-8', errors='ignore')
+                    output = output.encode('utf-8', errors='replace').decode('utf-8', errors='replace')
 
                     msg = f"Agent >> {current_agent}: {output}"
 
@@ -125,7 +125,8 @@ def Automated_Grading_Feedback(StudyFiles, AssignmentFiles):
         json_output = {
             "AgentOutputs": {name: agent_outputs.get(name, None) for name in agent_names}
         }
-        yield "\n\n"
+        yield "\n\n---FINAL_REPORT_START---\n"
         yield json.dumps(json_output, ensure_ascii=False, indent=2)
+        yield "\n---FINAL_REPORT_END---\n"
 
     return Response(generate_stream(StudyFiles, AssignmentFiles), content_type='text/event-stream')

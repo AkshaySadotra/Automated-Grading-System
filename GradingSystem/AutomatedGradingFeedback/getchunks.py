@@ -23,7 +23,7 @@ def _fetch_chunks(file_names: list[str]):
             normalized_names.append(name)
             
     file_names_str = ",".join(normalized_names)  
-    filter_expr = f"search.in(sourceFile, '{file_names_str}', ',')"
+    filter_expr = f"search.in(title, '{file_names_str}', ',')"
     
     print(f"DEBUG: Input filenames: {file_names}")
     print(f"DEBUG: Normalized for Search: {normalized_names}")
@@ -31,7 +31,7 @@ def _fetch_chunks(file_names: list[str]):
 
     results = client.search(
         search_text="*",
-        select=["content", "sourceFile"],
+        select=["chunk_text", "title"],
         filter=filter_expr,
         include_total_count=True
     )
@@ -41,15 +41,15 @@ def _fetch_chunks(file_names: list[str]):
 
     if count == 0:
         print("DEBUG: No matches found. Checking what IS in the index...")
-        diagnostic_results = client.search(search_text="*", select=["sourceFile"], top=5)
-        print("DEBUG: Sample 'sourceFile' values in index:")
+        diagnostic_results = client.search(search_text="*", select=["title"], top=5)
+        print("DEBUG: Sample 'title' values in index:")
         for r in diagnostic_results:
-            print(f"   - {r.get('sourceFile', 'MISSING FIELD')}")
+            print(f"   - {r.get('title', 'MISSING FIELD')}")
 
     chunks = []
     for result in results:
-        if "content" in result:
-            chunks.append(result["content"])
+        if "chunk_text" in result:
+            chunks.append(result["chunk_text"])
     return chunks
 
 

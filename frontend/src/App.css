@@ -87,11 +87,12 @@
 
 .centered-layout {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   flex: 1;
   min-height: 0;
   padding: 2rem;
+  gap: 2rem;
 }
 
 .centered-layout .input-section {
@@ -104,8 +105,9 @@
 }
 
 .output-section {
-  position: relative;
-  height: 100%;
+  width: 100%;
+  max-width: 800px;
+  min-height: 300px;
 }
 
 .decoration-orb {
@@ -121,4 +123,101 @@
   transform: translate(-50%, -50%);
   z-index: -1;
   pointer-events: none;
+}
+
+/* Success Modal Styles */
+.success-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.success-modal {
+  background: #1e1e2d;
+  border: 1px solid #333342;
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.success-modal h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.success-modal p {
+  color: #b0b0c0;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #a855f7 0%, #00d4ff 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid #333342;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.home-error {
+  max-width: 500px;
+  width: 100%;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
 }

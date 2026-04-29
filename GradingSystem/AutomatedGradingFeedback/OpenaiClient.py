@@ -24,8 +24,5 @@ def client():
         api_version=Api_version,
         azure_endpoint=Endpoint,
         api_key=Openai_api_key,
-        # reasoning_effect="minimal", # User requested this, but it might not be supported by all models? Keeping it as user added it. 
-        # Actually, user added it manually. I should keep it.
-        # But wait, does the library support it? If user added it, I'll keep it.
         model_capabilities={"vision": True, "function_calling": True, "json_output": True, "streaming": True}
     )

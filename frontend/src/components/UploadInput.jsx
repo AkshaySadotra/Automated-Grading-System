@@ -1,11 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { UploadCloud, Play, FileArchive, X } from 'lucide-react';
 import './UploadInput.css';
 
-const UploadInput = ({ onRun, isLoading }) => {
-    const [studyFile, setStudyFile] = useState(null);
-    const [assignmentFile, setAssignmentFile] = useState(null);
-
+const UploadInput = ({ onRun, isLoading, studyFile, setStudyFile, assignmentFile, setAssignmentFile }) => {
     const handleFileChange = (e, type) => {
         const file = e.target.files[0];
         if (file && file.name.endsWith('.zip')) {
@@ -19,7 +16,7 @@ const UploadInput = ({ onRun, isLoading }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (studyFile && assignmentFile) {
-            onRun(studyFile, assignmentFile);
+            onRun();
         }
     };
 
